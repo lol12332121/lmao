@@ -1,0 +1,71 @@
+
+local player = game:GetService("Players").LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+
+
+local function bypassDetection()
+    -- Обход проверки инструментов
+    if character:FindFirstChild("Club") then
+        character.Club:Destroy()
+    end
+    
+  
+    for _, track in ipairs(humanoid:GetPlayingAnimationTracks()) do
+        if track.Name == "RestrictedAnimation" then
+            track:Stop()
+        end
+    end
+    
+    
+    local brainrot = workspace:FindFirstChild("Brainrot")
+    if brainrot then
+        for _, part in ipairs(brainrot:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.CanTouch = false
+                part.CanCollide = false
+            elseif part:IsA("Script") and part.Name == "DetectionScript" then
+                part.Disabled = true
+            end
+        end
+    end
+end
+
+
+while task.wait(0.5) do
+    if character:FindFirstChild("Brainrot") then
+        bypassDetection()
+        
+      
+        local tool = character:FindFirstChildOfClass("Tool")
+        if tool then
+            tool.Parent = player.Backpack
+            tool.Parent = character
+        end
+        
+        
+        for _, effect in ipairs(character:GetChildren()) do
+            if effect:IsA("ParticleEmitter") then
+                effect.Enabled = false
+            end
+        end
+    end
+    
+    
+    for _, v in ipairs(getconnections(player.Idled)) do
+        v:Disable()
+    end
+end
+
+
+local mt = getrawmetatable(game)
+setreadonly(mt, false)
+local namecall = mt.__namecall
+
+mt.__namecall = newcclosure(function(self, ...)
+    local method = getnamecallmethod()
+    if tostring(self) == "SecuritySystem" and method == "Kick" then
+        return nil
+    end
+    return namecall(self, ...)
+end)
